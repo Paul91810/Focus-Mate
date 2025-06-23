@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:focus_mate/core/theme/constants.dart';
+import 'package:focus_mate/core/common/constants.dart';
 
 class AppTheame {
   static _border([Color color = AppConstants.kPrimaryColor]) =>
