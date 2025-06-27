@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:focus_mate/core/common/constants.dart';
-import 'package:focus_mate/core/common/widgets/custom_appbutton.dart';
-import 'package:focus_mate/core/common/widgets/custom_textfield/custom_textfield.dart';
+import 'package:focus_mate/core/constants/app_colors.dart';
+import 'package:focus_mate/core/constants/app_size.dart';
+import 'package:focus_mate/presentation/widgets/custom_appbutton.dart';
+import 'package:focus_mate/presentation/widgets/custom_textfield/custom_textfield.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -25,7 +26,7 @@ class LoginScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 Image(image: Svg('assets/images/signup_backgroundimage.svg')),
-                AppConstants.commonHeight,
+                AppSize.commonHeight,
                 CustomTextField(
                   controller: emilController,
                   label: 'Email',
@@ -36,13 +37,13 @@ class LoginScreen extends StatelessWidget {
                   label: 'Password',
                   validator: (value) {},
                 ),
-                AppConstants.commonHeight,
+                AppSize.commonHeight,
                 CustomAppButton(
                   buttonSize: Size(double.infinity, 45.h),
                   child: Text('Log in', style: TextStyle(fontSize: 18.sp)),
                   onPressed: () {},
                 ),
-                AppConstants.commonHeight,
+                AppSize.commonHeight,
                 Row(
                   children: [
                     const Expanded(
@@ -62,7 +63,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 CustomAppButton(
                   bordersideColor: Colors.grey.shade400,
-                  backGroundcolor: AppConstants.kPrimaryColor,
+                  backGroundcolor: AppColors.kPrimaryColor,
                   buttonSize: Size(double.infinity, 40.h),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -79,10 +80,10 @@ class LoginScreen extends StatelessWidget {
                   ),
                   onPressed: () {},
                 ),
-                AppConstants.commonHeight,
+                AppSize.commonHeight,
                 TextButton(onPressed: () {}, child: Text('Sign Up',style: TextStyle(
                   fontSize: 14.h,
-                  color: AppConstants.kSecondaryColor),)),
+                  color: AppColors.kSecondaryColor),)),
               ],
             ),
           ),

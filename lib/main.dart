@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/theme/theme.dart';
-import 'package:focus_mate/presentation/signup/signup_scren.dart';
 import 'package:focus_mate/presentation/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized;
   await ScreenUtil.ensureScreenSize();
+
   runApp(const MyApp());
 }
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: AppTheame.appTheame,
-          home: LoginScreen(),
+          home: SplashScreen(),
         );
       },
     );

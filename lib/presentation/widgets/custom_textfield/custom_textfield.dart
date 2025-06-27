@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:focus_mate/core/common/constants.dart';
-import 'package:focus_mate/core/common/widgets/custom_textfield/bloc/custom_textfield_bloc.dart';
+import 'package:focus_mate/core/constants/app_size.dart';
+import 'package:focus_mate/presentation/widgets/custom_textfield/bloc/custom_textfield_bloc.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -51,7 +51,7 @@ class CustomTextField extends StatelessWidget {
                       : null,
                 ),
               ),
-              AppConstants.commonHeight,
+              AppSize.commonHeight,
             ],
           );
         },

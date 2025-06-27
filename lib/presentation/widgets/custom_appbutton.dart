@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:focus_mate/core/common/constants.dart';
+import 'package:focus_mate/core/constants/app_colors.dart';
 
 class CustomAppButton extends StatelessWidget {
   const CustomAppButton({
     super.key,
     required this.child,
     required this.onPressed,
-    this.backGroundcolor=AppConstants.kSecondaryColor,
+    this.backGroundcolor=AppColors.kSecondaryColor,
     this.shape,
     this.buttonSize,
     this.disabledBackgroundColor,
