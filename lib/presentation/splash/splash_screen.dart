@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
-import 'package:focus_mate/presentation/onboarding/onboarding_screen.dart';
+import 'package:focus_mate/presentation/onboarding/onr_boardings_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
