@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:focus_mate/core/theme/constants.dart';
+import 'package:focus_mate/core/constants/app_colors.dart';
 
 class AppTheame {
-  static _border([Color color = AppConstants.kPrimaryColor]) =>
+  static _border([Color color = AppColors.kPrimaryColor]) =>
       OutlineInputBorder(borderRadius: BorderRadius.circular(20));
   static final appTheame = ThemeData(
     inputDecorationTheme: InputDecorationTheme(
@@ -11,14 +11,14 @@ class AppTheame {
       enabledBorder: _border(),
     ),
     brightness: Brightness.light,
-    primaryColor: AppConstants.kPrimaryColor,
-    scaffoldBackgroundColor: AppConstants.kPrimaryColor,
+    primaryColor: AppColors.kPrimaryColor,
+    scaffoldBackgroundColor: AppColors.kPrimaryColor,
     cardColor: const Color(0xFFF9FAFB),
     colorScheme: ColorScheme.light(
-      primary: AppConstants.kPrimaryColor,
-      primaryContainer: AppConstants.kPrimaryVariant,
-      secondary: AppConstants.kSecondaryColor,
-      secondaryContainer: AppConstants.kSecondaryVariant,
+      primary: AppColors.kPrimaryColor,
+      primaryContainer: AppColors.kPrimaryVariant,
+      secondary: AppColors.kSecondaryColor,
+      secondaryContainer: AppColors.kSecondaryVariant,
       surface: const Color(0xFFF9FAFB),
       onPrimary: Colors.white,
       onSecondary: Colors.white,
@@ -38,14 +38,14 @@ class AppTheame {
       enabledBorder: _border(),
     ),
     brightness: Brightness.dark,
-    primaryColor: AppConstants.kPrimaryColor,
+    primaryColor: AppColors.kPrimaryColor,
     scaffoldBackgroundColor: const Color(0xFF1F2937),
     cardColor: const Color(0xFF374151),
     colorScheme: ColorScheme.dark(
-      primary: AppConstants.kPrimaryColor,
-      primaryContainer: AppConstants.kPrimaryVariant,
-      secondary: AppConstants.kSecondaryColor,
-      secondaryContainer: AppConstants.kSecondaryVariant,
+      primary: AppColors.kPrimaryColor,
+      primaryContainer: AppColors.kPrimaryVariant,
+      secondary: AppColors.kSecondaryColor,
+      secondaryContainer: AppColors.kSecondaryVariant,
       surface: const Color(0xFF374151),
       onPrimary: Colors.white,
       onSecondary: Colors.white,
