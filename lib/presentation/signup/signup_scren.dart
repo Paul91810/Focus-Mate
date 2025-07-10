@@ -5,6 +5,7 @@ import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
 import 'package:focus_mate/presentation/widgets/custom_appbutton.dart';
 import 'package:focus_mate/presentation/widgets/custom_textfield/custom_textfield.dart';
+import 'package:lottie/lottie.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -20,12 +21,19 @@ class LoginScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "FocusMate",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineLarge
                 ),
-                Image(image: Svg('assets/images/signup_backgroundimage.svg')),
+                AppSize.height20,
+                Center(
+                  child: Lottie.asset(
+                    'assets/animations/hand_loading.json',
+                    height: 180.h,
+                  ),
+                ),
                 AppSize.commonHeight,
                 CustomTextField(
                   controller: emilController,
@@ -40,50 +48,60 @@ class LoginScreen extends StatelessWidget {
                 AppSize.commonHeight,
                 CustomAppButton(
                   buttonSize: Size(double.infinity, 45.h),
-                  child: Text('Log in', style: TextStyle(fontSize: 18.sp)),
+                  child: Text(
+                    'Log in',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                   onPressed: () {},
                 ),
-                AppSize.commonHeight,
+                AppSize.height20,
                 Row(
                   children: [
                     const Expanded(
-                      
-                      child: Divider(
-                        color: Colors.black26,
-                        thickness: 1)),
-                    const Padding(
+                      child: Divider(color: Colors.white, thickness: 1),
+                    ),
+                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
                         'Or',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ),
-                    const Expanded(child: Divider(thickness: 1,color: Colors.black26,)),
+                    const Expanded(
+                      child: Divider(thickness: 1, color: Colors.white),
+                    ),
                   ],
                 ),
+                AppSize.height20,
                 CustomAppButton(
-                  bordersideColor: Colors.grey.shade400,
+                  bordersideColor: Colors.grey.shade600,
                   backGroundcolor: AppColors.kPrimaryColor,
                   buttonSize: Size(double.infinity, 40.h),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Image(
-                        height: 20.h,
+                        height: 18.h,
                         image: Svg('assets/images/signupButtonImage.svg'),
                       ),
                       Text(
                         'Sig in with Google',
-                        style: TextStyle(color: Colors.black, fontSize: 18.sp),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
                   ),
                   onPressed: () {},
                 ),
                 AppSize.commonHeight,
-                TextButton(onPressed: () {}, child: Text('Sign Up',style: TextStyle(
-                  fontSize: 14.h,
-                  color: AppColors.kSecondaryColor),)),
+                Center(
+                  child: TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Sign Up',
+                      style: Theme.of(context).textTheme.bodyLarge
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

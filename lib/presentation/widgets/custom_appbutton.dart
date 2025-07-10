@@ -6,7 +6,7 @@ class CustomAppButton extends StatelessWidget {
     super.key,
     required this.child,
     required this.onPressed,
-    this.backGroundcolor=AppColors.kSecondaryColor,
+    this.backGroundcolor=AppColors.kSecondryColor,
     this.shape,
     this.buttonSize,
     this.disabledBackgroundColor,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
-import 'package:focus_mate/presentation/onboarding/onr_boardings_screen.dart';
+import 'package:focus_mate/presentation/onboarding/on_boardings_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -9,7 +9,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.kSecondaryColor,
+      backgroundColor: AppColors.kPrimaryColor,
       body: FutureBuilder(
         future: _gotoNextScreen(context),
         builder: (context, snapshot) {
@@ -18,13 +18,13 @@ class SplashScreen extends StatelessWidget {
               height: double.infinity,
               width: double.infinity,
               child: Image(
-                image: Svg("assets/images/splashScreen.svg"),
+                image: Svg("assets/images/applogo.svg"),
                 fit: BoxFit.cover,
               ),
             );
           } else {
             return Container(
-              color: AppColors.kAccentColor,
+              color: AppColors.kWhite,
               alignment: Alignment.center,
               child: CircularProgressIndicator(),
             );
@@ -35,10 +35,7 @@ class SplashScreen extends StatelessWidget {
   }
 
   Future<void> _gotoNextScreen(BuildContext context) async {
-    await precacheImage(
-      const Svg('assets/images/onboardingBackground.svg'),
-      context,
-    );
+   
     Future.delayed(Duration(seconds: 3), () async {
       await Navigator.pushAndRemoveUntil(
         context,
