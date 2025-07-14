@@ -26,7 +26,7 @@ class _OnboardingCardState extends State<OnboardingCard>
       'description':
           "Orgnaize yor tasks, focus on your goals and ,and stay productive.",
     },
-     {
+    {
       'title': "Organize Your Tasks",
       'description': "Easily manage your to-do list and achive your goals.",
     },
@@ -36,7 +36,6 @@ class _OnboardingCardState extends State<OnboardingCard>
       'description':
           "Organize your tasks, focus on your goals and achieve more!",
     },
-   
   ];
 
   @override
@@ -69,8 +68,8 @@ class _OnboardingCardState extends State<OnboardingCard>
               builder: (context, child) {
                 return Container(
                   margin: EdgeInsets.symmetric(
-                    horizontal: 25.w,
-                    vertical: 110.h,
+                    horizontal: 10.w,
+                    vertical: 130.h,
                   ),
 
                   decoration: BoxDecoration(
@@ -94,10 +93,7 @@ class _OnboardingCardState extends State<OnboardingCard>
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 10.h,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

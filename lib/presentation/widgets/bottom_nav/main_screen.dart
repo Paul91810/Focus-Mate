@@ -33,7 +33,7 @@ class MainScreen extends StatelessWidget {
               return false;
             },
             child: Scaffold(
-              drawer: Drawer(),
+            
               appBar: AppBar(),
               // appBar: AppBarWidget(
               //   profileType: ProfileType.parent,
