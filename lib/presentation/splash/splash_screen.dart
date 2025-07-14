@@ -35,8 +35,8 @@ class SplashScreen extends StatelessWidget {
   }
 
   Future<void> _gotoNextScreen(BuildContext context) async {
-   
     Future.delayed(Duration(seconds: 3), () async {
+      if (!context.mounted) return;
       await Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => OnboardingScreen()),

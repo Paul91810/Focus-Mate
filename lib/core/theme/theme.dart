@@ -131,7 +131,7 @@ class AppTheame {
 
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: AppColors.kPrimaryColor,
-      selectionColor: AppColors.kPrimaryColor.withOpacity(0.2),
+      selectionColor: AppColors.kPrimaryColor,
       selectionHandleColor: AppColors.kPrimaryColor,
     ),
 

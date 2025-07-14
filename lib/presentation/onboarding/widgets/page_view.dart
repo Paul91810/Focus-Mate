@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
-import 'package:focus_mate/presentation/signup/signup_scren.dart';
+import 'package:focus_mate/presentation/login/login_screen.dart';
 import 'package:focus_mate/presentation/widgets/custom_appbutton.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
