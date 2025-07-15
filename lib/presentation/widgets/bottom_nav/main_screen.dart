@@ -4,10 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/presentation/home/home_screen.dart';
 import 'package:focus_mate/presentation/pomodoro/pomodoro_screen.dart';
-import 'package:focus_mate/presentation/profile_and_status/profile_and_status_screen.dart';
-import 'package:focus_mate/presentation/smart_task_planner/smart_task_panner_screen.dart';
+import 'package:focus_mate/presentation/profile/profile_screen.dart';
+import 'package:focus_mate/presentation/daily_planner/daily_planner_screen.dart';
 import 'package:focus_mate/presentation/widgets/bottom_nav/bloc/bottom_nav_bloc.dart';
 import 'package:focus_mate/presentation/widgets/bottom_nav/bottom_nav_bar.dart';
+import 'package:focus_mate/presentation/widgets/custom_elvated_button.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
@@ -15,10 +16,10 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> titles = [
-      'Stay focused, Stay \nProductive.',
+      'Home',
       'Pomodoro Timer',
-      '',
-      '',
+      'Smart Task Planner',
+      'Profile',
     ];
     return BlocProvider(
       create: (context) => BottomNavBloc(),
@@ -40,7 +41,7 @@ class MainScreen extends StatelessWidget {
             },
             child: Scaffold(
               appBar: AppBar(
-                actionsPadding:EdgeInsets.symmetric(horizontal: 20.w) ,
+                actionsPadding: EdgeInsets.symmetric(horizontal: 20.w),
                 automaticallyImplyLeading: false,
                 title: Text(titles[state.currentIndex]),
                 actions: [Icon(Icons.notification_add)],
@@ -56,6 +57,18 @@ class MainScreen extends StatelessWidget {
                   : const SizedBox.shrink(),
 
               bottomNavigationBar: BottomNavBar(),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerFloat,
+              floatingActionButton: state.currentIndex == 2
+                  ? CustomAppElvatedButton(
+                    buttonSize: Size(300.w, 40.h),
+                      child: Text(
+                        'See details',
+                        style: TextTheme.of(context).bodyLarge,
+                      ),
+                      onPressed: () async {},
+                    )
+                  : SizedBox(),
             ),
           );
         },
@@ -66,7 +79,7 @@ class MainScreen extends StatelessWidget {
   final List<Widget> bottomScreens = [
     HomeScreen(),
     PomodoroScreen(),
-    SmartTaskPannerScreen(),
+    PlanCreator(),
     ProfileAndStatusScreen(),
   ];
 }
