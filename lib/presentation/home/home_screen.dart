@@ -14,13 +14,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
       children: [
-        Text(
-          'Stay focused, Stay \nProductive.',
-          style: TextTheme.of(context).titleLarge,
-        ),
-        AppSize.commonHeight,
         Container(
           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
           height: 160.h,
@@ -98,7 +93,7 @@ class HomeScreen extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             return Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
               decoration: BoxDecoration(
                 color: AppColors.kButtonBlue,
                 borderRadius: BorderRadius.circular(10),

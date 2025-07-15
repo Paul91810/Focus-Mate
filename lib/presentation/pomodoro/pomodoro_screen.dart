@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,22 +8,19 @@ import 'package:focus_mate/presentation/pomodoro/bloc/pomodoro_timer_bloc.dart';
 import 'package:focus_mate/presentation/widgets/custom_elvated_button.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-class PomodoroScreen extends StatelessWidget {
+class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
 
+  @override
+  State<PomodoroScreen> createState() => _PomodoroScreenState();
+}
+
+class _PomodoroScreenState extends State<PomodoroScreen>
+    with SingleTickerProviderStateMixin {
   String formatTime(int seconds) {
     int min = seconds ~/ 60;
     int sec = seconds % 60;
     return '$min:${sec.toString().padLeft(2, '0')}';
-  }
-
-  String getInvertedPercentage(int workTimeInMinutes, int remainingSeconds) {
-    if (remainingSeconds == 0) return "100";
-    final data =
-        ((workTimeInMinutes * 60 - remainingSeconds) /
-            (workTimeInMinutes * 60)) *
-        100;
-    return data.toInt().toString();
   }
 
   Color setColor(String remainingSeconds) {
@@ -49,11 +44,13 @@ class PomodoroScreen extends StatelessWidget {
       child: BlocBuilder<PomodoroTimerBloc, PomodoroTimerInitial>(
         builder: (context, state) {
           final bloc = context.read<PomodoroTimerBloc>();
+          final percentage = bloc.getInvertedPercentage(
+            state.workTimeInMinutes,
+            state.remainingSeconds,
+          );
           return ListView(
-            padding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 10.w),
+            padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
             children: [
-              Text('Pomodoro Timer', style: TextTheme.of(context).titleLarge),
-              SizedBox(height: 30.h),
               Center(
                 child: GestureDetector(
                   onTap: state.remainingSeconds != 0
@@ -64,49 +61,39 @@ class PomodoroScreen extends StatelessWidget {
                   child: CircularPercentIndicator(
                     radius: 160.w,
                     lineWidth: 15.w,
-                    percent: state.workTimeInMinutes == 0
-                        ? 0
-                        : (state.remainingSeconds /
-                                  (state.workTimeInMinutes * 60))
-                              .clamp(0.0, 1.0),
+                    percent:
+                        (state.remainingSeconds /
+                                (state.workTimeInMinutes * 60))
+                            .clamp(0.0, 1.0),
                     center: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          formatTime(state.remainingSeconds),
-                          style: TextTheme.of(context).displaySmall,
+                        Row(
+                          mainAxisAlignment: state.remainingSeconds != 0
+                              ? MainAxisAlignment.spaceEvenly
+                              : MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              formatTime(state.remainingSeconds),
+                              style: TextTheme.of(context).displayLarge,
+                            ),
+
+                            Text(
+                              state.remainingSeconds != 0 ? '$percentage%' : '',
+                              style: TextStyle(
+                                color: setColor(percentage),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40.sp,
+                              ),
+                            ),
+                          ],
                         ),
                         AppSize.commonHeight,
                         Text(
                           state.remainingSeconds == 0
                               ? 'Tap here to set focus time'
                               : 'Time to focus.!',
-                        ),
-                        AppSize.commonHeight,
-                        state.remainingSeconds != 0
-                            ? Text(
-                                '${getInvertedPercentage(state.workTimeInMinutes, state.remainingSeconds)}%',
-                                style: TextStyle(
-                                  color: setColor(
-                                    getInvertedPercentage(
-                                      state.workTimeInMinutes,
-                                      state.remainingSeconds,
-                                    ),
-                                  ),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40.sp,
-                                ),
-                              )
-                            : SizedBox(),
-
-                        Center(
-                          child: Text(
-                            'Total Paused Time: \n${state.totalPausedDuration.inMinutes} min ${state.totalPausedDuration.inSeconds % 60} sec',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12.sp,
-                            ),
-                          ),
+                          style: TextTheme.of(context).labelLarge,
                         ),
                       ],
                     ),
@@ -123,15 +110,17 @@ class PomodoroScreen extends StatelessWidget {
                   CustomAppElvatedButton(
                     backGroundcolor: AppColors.kButtonBlue,
                     buttonSize: Size(150.w, 40.h),
+                    onPressed: state.remainingSeconds == 0
+                        ? () async {}
+                        : () async {
+                            state.isRunning
+                                ? bloc.add(PauseTimer())
+                                : bloc.add(StartTimer());
+                          },
                     child: Text(
                       state.isRunning ? "Pause" : "Start",
                       style: TextTheme.of(context).bodyLarge,
                     ),
-                    onPressed: () async {
-                      state.isRunning
-                          ? bloc.add(PauseTimer())
-                          : bloc.add(StartTimer());
-                    },
                   ),
                   CustomAppElvatedButton(
                     backGroundcolor: Colors.white70,
@@ -157,50 +146,44 @@ class PomodoroScreen extends StatelessWidget {
     final bloc = context.read<PomodoroTimerBloc>();
     final items = List.generate(61, (index) => index);
     int selectedValue = 0;
-    showDialog(
+
+    showCupertinoModalPopup(
       context: context,
       builder: (context) {
-        return CupertinoAlertDialog(
-          title: Text('Set Your Time'),
-          actions: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 50.h),
-                  Center(
-                    child: CupertinoPicker(
-                      itemExtent: 50.0,
-
-                      onSelectedItemChanged: (int index) {
-                        selectedValue = items[index];
-                      },
-                      children: items.map((value) {
-                        int incrementedIndex = value;
-                        return Center(child: Text(incrementedIndex.toString()));
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(height: 60.h),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: TextButton(
-                      onPressed: () {
-                        bloc.add(SetWorkTime(selectedValue));
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        'Select',
-                        style: TextTheme.of(context).titleMedium,
-                      ),
-                    ),
-                  ),
-                ],
+        return Container(
+          height: 350.h,
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: AppColors.kButtonBlue,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoPicker(
+                  itemExtent: 50.h,
+                  scrollController: FixedExtentScrollController(initialItem: 0),
+                  onSelectedItemChanged: (index) {
+                    selectedValue = items[index];
+                  },
+                  children: items
+                      .map((value) => Center(child: Text("$value min")))
+                      .toList(),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 10.h),
+              SizedBox(
+                width: double.infinity,
+                child: CupertinoButton.filled(
+                  child: Text("Set Time"),
+                  onPressed: () {
+                    bloc.add(SetWorkTime(selectedValue));
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

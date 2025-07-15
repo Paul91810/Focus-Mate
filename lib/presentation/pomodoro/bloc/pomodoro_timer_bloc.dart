@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:focus_mate/data/local/pomodoro_timer.dart';
 import 'package:meta/meta.dart';
 
 part 'pomodoro_timer_event.dart';
@@ -74,6 +75,20 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
     } else {
       timer?.cancel();
       emit(state.copyWith(isRunning: false));
+
+      final percentage = getInvertedPercentage(
+        state.workTimeInMinutes,
+        state.remainingSeconds,
+      );
+
+      final data = PomodoroTimer(
+        workTimeInMinutes: state.workTimeInMinutes,
+        totalPausedDuration: state.totalPausedDuration,
+        percentage: percentage,
+      );
+      // log("Completed: ${data.percentage}%");
+      // log(data.totalPausedDuration.inSeconds.toString());
+      // log(data.workTimeInMinutes.toString());
     }
   }
 
@@ -86,6 +101,16 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         isRunning: false,
       ),
     );
+  }
+
+  String getInvertedPercentage(int workTimeInMinutes, int remainingSeconds) {
+    if (workTimeInMinutes == 0) return "0";
+    if (remainingSeconds == 0) return "100";
+    final data =
+        ((workTimeInMinutes * 60 - remainingSeconds) /
+            (workTimeInMinutes * 60)) *
+        100;
+    return data.toInt().toString();
   }
 
   @override

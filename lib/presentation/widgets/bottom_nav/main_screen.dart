@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/presentation/home/home_screen.dart';
 import 'package:focus_mate/presentation/pomodoro/pomodoro_screen.dart';
@@ -14,6 +14,12 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> titles = [
+      'Stay focused, Stay \nProductive.',
+      'Pomodoro Timer',
+      '',
+      '',
+    ];
     return BlocProvider(
       create: (context) => BottomNavBloc(),
       child: BlocBuilder<BottomNavBloc, BottomNavState>(
@@ -33,22 +39,13 @@ class MainScreen extends StatelessWidget {
               return false;
             },
             child: Scaffold(
-            
-              appBar: AppBar(),
-              // appBar: AppBarWidget(
-              //   profileType: ProfileType.parent,
-              //   title: Center(
-              //     child: Text(
-              //       appBartitles[currentIndex],
-              //       style: TextStyle(
-              //         fontSize: 20.sp,
-              //         fontWeight: FontWeight.bold,
-              //         color: AppColors.kPrimaryColor,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // drawer: AppDrawer(profileType: ProfileType.parent),
+              appBar: AppBar(
+                actionsPadding:EdgeInsets.symmetric(horizontal: 20.w) ,
+                automaticallyImplyLeading: false,
+                title: Text(titles[state.currentIndex]),
+                actions: [Icon(Icons.notification_add)],
+              ),
+
               backgroundColor: AppColors.kPrimaryColor,
 
               body: state is BottomNavInitial
