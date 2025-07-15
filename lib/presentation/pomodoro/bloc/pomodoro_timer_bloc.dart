@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -8,6 +9,9 @@ part 'pomodoro_timer_state.dart';
 
 class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   Timer? timer;
+  DateTime? pauseTime;
+  DateTime? resumeTime;
+  Duration totalPausedDuration = Duration.zero;
 
   PomodoroTimerBloc()
     : super(
@@ -25,6 +29,23 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   }
 
   void _onStartTimer(StartTimer event, Emitter<PomodoroTimerInitial> emit) {
+    if (!state.isRunning && pauseTime != null) {
+      resumeTime = DateTime.now();
+      final pausedDuration = resumeTime!.difference(pauseTime!);
+      totalPausedDuration += pausedDuration;
+      emit(
+        state.copyWith(
+          isRunning: true,
+          totalPausedDuration: totalPausedDuration,
+        ),
+      );
+
+      log("Paused for: ${pausedDuration.inMinutes} minuts");
+      log("Total paused time: ${totalPausedDuration.inMinutes} minuts");
+
+      pauseTime = null;
+    }
+
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (_) => add(Tick()));
     emit(state.copyWith(isRunning: true));
@@ -32,6 +53,7 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
 
   void _onPauseTimer(PauseTimer event, Emitter<PomodoroTimerInitial> emit) {
     timer?.cancel();
+    pauseTime = DateTime.now();
     emit(state.copyWith(isRunning: false));
   }
 
@@ -41,6 +63,7 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
       state.copyWith(
         remainingSeconds: 0,
         isRunning: false,
+        totalPausedDuration: Duration.zero,
       ),
     );
   }

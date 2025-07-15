@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -95,6 +98,16 @@ class PomodoroScreen extends StatelessWidget {
                                 ),
                               )
                             : SizedBox(),
+
+                        Center(
+                          child: Text(
+                            'Total Paused Time: \n${state.totalPausedDuration.inMinutes} min ${state.totalPausedDuration.inSeconds % 60} sec',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     progressColor: Colors.blue,
@@ -103,18 +116,7 @@ class PomodoroScreen extends StatelessWidget {
                 ),
               ),
               AppSize.height20,
-              state.remainingSeconds != 0
-                  ? TextButton(
-                      onPressed: () {
-                        _showFinishPopup(context);
-                      },
-                      child: Text(
-                        'Change of Plans? Set a New Focus Time',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
-                  : SizedBox(),
-              SizedBox(height: 50.w),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -153,19 +155,50 @@ class PomodoroScreen extends StatelessWidget {
 
   void _showFinishPopup(BuildContext context) {
     final bloc = context.read<PomodoroTimerBloc>();
+    final items = List.generate(61, (index) => index);
+    int selectedValue = 0;
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: AppColors.kButtonBlue,
-          title: Text("Set Time"),
+        return CupertinoAlertDialog(
+          title: Text('Set Your Time'),
           actions: [
-            TextButton(
-              onPressed: () {
-                bloc.add(SetWorkTime(2));
-                Navigator.of(context).pop();
-              },
-              child: Text("OK", style: TextTheme.of(context).bodySmall),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 50.h),
+                  Center(
+                    child: CupertinoPicker(
+                      itemExtent: 50.0,
+
+                      onSelectedItemChanged: (int index) {
+                        selectedValue = items[index];
+                      },
+                      children: items.map((value) {
+                        int incrementedIndex = value;
+                        return Center(child: Text(incrementedIndex.toString()));
+                      }).toList(),
+                    ),
+                  ),
+                  SizedBox(height: 60.h),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: TextButton(
+                      onPressed: () {
+                        bloc.add(SetWorkTime(selectedValue));
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Select',
+                        style: TextTheme.of(context).titleMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         );
