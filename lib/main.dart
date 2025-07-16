@@ -3,11 +3,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/theme/theme.dart';
 import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:focus_mate/presentation/splash/splash_screen.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized;
   await ScreenUtil.ensureScreenSize();
-  await initializeLocalNotifications();
+  await Hive.initFlutter();
+  await NotificationService().initNotification();
+  await NotificationService().requestNotificationPermission();
+  await Hive.openBox('pomodoro_timer');
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
 }
 

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:focus_mate/data/local/hive_boxs.dart';
 import 'package:focus_mate/data/local/pomodoro_timer.dart';
+import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:meta/meta.dart';
 
 part 'pomodoro_timer_event.dart';
@@ -14,19 +16,46 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   DateTime? resumeTime;
   Duration totalPausedDuration = Duration.zero;
 
-  PomodoroTimerBloc()
-    : super(
-        PomodoroTimerInitial(
-          totalDurationInSeconds: 0,
-          remainingSeconds: 0,
-          isRunning: false,
-        ),
-      ) {
+  PomodoroTimerBloc() : super(_loadStateFromHive()) {
     on<StartTimer>(_onStartTimer);
     on<PauseTimer>(_onPauseTimer);
     on<ResetTimer>(_onResetTimer);
     on<Tick>(_onTick);
     on<SetCustomTime>(_onSetCustomTime);
+
+    if (state.isRunning) {
+      timer = Timer.periodic(const Duration(seconds: 1), (_) => add(Tick()));
+    }
+  }
+
+  static PomodoroTimerInitial _loadStateFromHive() {
+    final box = HiveBoxs.pomodoroBox;
+    final totalDurationInSeconds = box.get(
+      'totalDurationInSeconds',
+      defaultValue: 0,
+    );
+    final startTimeString = box.get('startTime');
+    final isRunning = box.get('isRunning', defaultValue: false);
+    Duration totalPausedDuration = Duration(
+      seconds: box.get('totalPausedDuration', defaultValue: 0),
+    );
+    int remainingSeconds = box.get('remainingSeconds', defaultValue: 0);
+
+    if (startTimeString != null) {
+      final startTime = DateTime.parse(startTimeString);
+      final elapsed = DateTime.now().difference(startTime).inSeconds;
+      remainingSeconds = (totalDurationInSeconds - elapsed).clamp(
+        0,
+        totalDurationInSeconds,
+      );
+    }
+
+    return PomodoroTimerInitial(
+      totalDurationInSeconds: totalDurationInSeconds,
+      remainingSeconds: remainingSeconds,
+      isRunning: isRunning && remainingSeconds > 0,
+      totalPausedDuration: totalPausedDuration,
+    );
   }
 
   void _onStartTimer(StartTimer event, Emitter<PomodoroTimerInitial> emit) {
@@ -40,22 +69,20 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
           totalPausedDuration: totalPausedDuration,
         ),
       );
-
-      log("Paused for: ${pausedDuration.inMinutes} minutes");
-      log("Total paused time: ${totalPausedDuration.inMinutes} minutes");
-
       pauseTime = null;
     }
 
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (_) => add(Tick()));
     emit(state.copyWith(isRunning: true));
+    _saveStateToHive(state.copyWith(isRunning: true));
   }
 
   void _onPauseTimer(PauseTimer event, Emitter<PomodoroTimerInitial> emit) {
     timer?.cancel();
     pauseTime = DateTime.now();
     emit(state.copyWith(isRunning: false));
+    _saveStateToHive(state.copyWith(isRunning: false));
   }
 
   void _onResetTimer(ResetTimer event, Emitter<PomodoroTimerInitial> emit) {
@@ -68,6 +95,7 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         totalPausedDuration: Duration.zero,
       ),
     );
+    _saveStateToHive(state.copyWith(isRunning: false));
   }
 
   void _onTick(Tick event, Emitter<PomodoroTimerInitial> emit) {
@@ -76,16 +104,13 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
     } else {
       timer?.cancel();
       emit(state.copyWith(isRunning: false));
-
       final percentage = getInvertedPercentage(
         state.totalDurationInSeconds,
         state.remainingSeconds,
       );
       final data = totalPausedDuration.inHours == 0
           ? totalPausedDuration.inMinutes
-          : totalPausedDuration.inHours-1;
-      log(data.toString());
-      log((state.totalDurationInSeconds / 60).round().toString());
+          : totalPausedDuration.inHours - 1;
       _getTotalPercentage(
         totalPausedDuration.inMinutes,
         (state.totalDurationInSeconds / 60).round(),
@@ -95,13 +120,21 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         totalPausedDuration: state.totalPausedDuration,
         percentage: percentage,
       );
-      state.copyWith(
-        remainingSeconds: 0,
-        totalDurationInSeconds: 0,
-        isRunning: false,
-        totalPausedDuration: Duration.zero,
+      NotificationService.showNotification(
+        title: 'Focus Mode Completed',
+        body:
+            "Your focus session has finished. You can now review your progress or start a new session.",
+      );
+      emit(
+        state.copyWith(
+          remainingSeconds: 0,
+          totalDurationInSeconds: 0,
+          isRunning: false,
+          totalPausedDuration: Duration.zero,
+        ),
       );
     }
+    _saveStateToHive(state);
   }
 
   void _onSetCustomTime(
@@ -116,9 +149,8 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         isRunning: false,
       ),
     );
+    _saveStateToHive(state.copyWith(isRunning: false));
   }
-
-  // This function calculates the total pause time and the total countdown completion percentage.
 
   int _getTotalPercentage(int pausedTime, int time) {
     final activeTime = pausedTime >= time ? 0 : (time - pausedTime);
@@ -128,7 +160,6 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
     return roundedPercentage;
   }
 
-  //This function is used to calculate the countdown percentage. If the value is 0, the percentage defaults to 100%.
   String getInvertedPercentage(
     int totalDurationInSeconds,
     int remainingSeconds,
@@ -139,6 +170,31 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         ((totalDurationInSeconds - remainingSeconds) / totalDurationInSeconds) *
         100;
     return completed.toInt().toString();
+  }
+
+  void _saveStateToHive(PomodoroTimerInitial state) {
+    HiveBoxs.pomodoroBox.put(
+      'totalDurationInSeconds',
+      state.totalDurationInSeconds,
+    );
+    HiveBoxs.pomodoroBox.put('remainingSeconds', state.remainingSeconds);
+    HiveBoxs.pomodoroBox.put('isRunning', state.isRunning);
+    HiveBoxs.pomodoroBox.put(
+      'totalPausedDuration',
+      state.totalPausedDuration.inSeconds,
+    );
+    if (state.isRunning) {
+      HiveBoxs.pomodoroBox.put(
+        'startTime',
+        DateTime.now()
+            .subtract(
+              Duration(
+                seconds: state.totalDurationInSeconds - state.remainingSeconds,
+              ),
+            )
+            .toIso8601String(),
+      );
+    }
   }
 
   @override

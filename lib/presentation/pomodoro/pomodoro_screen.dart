@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
@@ -162,11 +161,11 @@ class _PomodoroScreenState extends State<PomodoroScreen>
       context: context,
       builder: (context) {
         return Container(
-          height: 350.h,
-          padding: EdgeInsets.all(16.w),
+          height: 350,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.kSecondryColor,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
@@ -175,7 +174,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                   children: [
                     Expanded(
                       child: CupertinoPicker(
-                        itemExtent: 50.h,
+                        itemExtent: 50,
                         onSelectedItemChanged: (index) {
                           selectedHour = index;
                         },
@@ -187,7 +186,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                     ),
                     Expanded(
                       child: CupertinoPicker(
-                        itemExtent: 50.h,
+                        itemExtent: 50,
                         onSelectedItemChanged: (index) {
                           selectedMinuteIndex = index;
                         },
@@ -199,12 +198,12 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                   ],
                 ),
               ),
-              SizedBox(height: 10.h),
+              const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 child: CupertinoButton.filled(
                   color: AppColors.kPrimaryColor,
-                  child: Text("Set Time"),
+                  child: const Text("Set Time"),
                   onPressed: () {
                     int selectedMinute = minuteOptions[selectedMinuteIndex];
 
@@ -215,8 +214,13 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
                     if (totalSeconds > 0) {
                       bloc.add(SetCustomTime(totalSeconds));
-                      showNotification();
+
                       Navigator.of(context).pop();
+                      NotificationService.showNotification(
+                        title: 'Focus Mode Activated',
+                        body:
+                            "Stay focused on your task. Minimize distractions and make the most of your session.",
+                      );
                     }
                   },
                 ),
@@ -225,28 +229,6 @@ class _PomodoroScreenState extends State<PomodoroScreen>
           ),
         );
       },
-    );
-  }
-
-  Future<void> showNotification() async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'channel_id', // Unique ID
-          'General Notifications', // Channel name
-          channelDescription: 'This channel is used for general notifications',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      0, // Notification ID
-      'Hello!',
-      'This is a local notification',
-      notificationDetails,
     );
   }
 }
