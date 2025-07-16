@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/theme/theme.dart';
+import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:focus_mate/presentation/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized;
   await ScreenUtil.ensureScreenSize();
-
+  await initializeLocalNotifications();
   runApp(const MyApp());
 }
 

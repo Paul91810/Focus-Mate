@@ -46,6 +46,7 @@ dependencies:
   fl_chart: ^1.0.0
   percent_indicator: ^4.2.5
   flutter_launcher_icons: ^0.14.4
+  flutter_local_notifications: ^19.3.0
 
 dev_dependencies:
   flutter_test:

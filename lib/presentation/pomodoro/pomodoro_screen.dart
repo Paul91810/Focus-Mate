@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
+import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:focus_mate/presentation/pomodoro/bloc/pomodoro_timer_bloc.dart';
 import 'package:focus_mate/presentation/widgets/custom_elvated_button.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -221,6 +223,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                         selectedSecond;
                     if (totalSeconds > 0) {
                       bloc.add(SetCustomTime(totalSeconds));
+                      showNotification();
                       Navigator.of(context).pop();
                     }
                   },
@@ -230,6 +233,28 @@ class _PomodoroScreenState extends State<PomodoroScreen>
           ),
         );
       },
+    );
+  }
+
+  Future<void> showNotification() async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'channel_id', // Unique ID
+          'General Notifications', // Channel name
+          channelDescription: 'This channel is used for general notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      'Hello!',
+      'This is a local notification',
+      notificationDetails,
     );
   }
 }
