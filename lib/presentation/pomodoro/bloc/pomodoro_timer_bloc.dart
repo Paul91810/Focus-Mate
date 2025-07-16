@@ -15,11 +15,13 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   Duration totalPausedDuration = Duration.zero;
 
   PomodoroTimerBloc()
-      : super(PomodoroTimerInitial(
+    : super(
+        PomodoroTimerInitial(
           totalDurationInSeconds: 0,
           remainingSeconds: 0,
           isRunning: false,
-        )) {
+        ),
+      ) {
     on<StartTimer>(_onStartTimer);
     on<PauseTimer>(_onPauseTimer);
     on<ResetTimer>(_onResetTimer);
@@ -32,10 +34,12 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
       resumeTime = DateTime.now();
       final pausedDuration = resumeTime!.difference(pauseTime!);
       totalPausedDuration += pausedDuration;
-      emit(state.copyWith(
-        isRunning: true,
-        totalPausedDuration: totalPausedDuration,
-      ));
+      emit(
+        state.copyWith(
+          isRunning: true,
+          totalPausedDuration: totalPausedDuration,
+        ),
+      );
 
       log("Paused for: ${pausedDuration.inMinutes} minutes");
       log("Total paused time: ${totalPausedDuration.inMinutes} minutes");
@@ -56,12 +60,14 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
 
   void _onResetTimer(ResetTimer event, Emitter<PomodoroTimerInitial> emit) {
     timer?.cancel();
-    emit(state.copyWith(
-      remainingSeconds: 0,
-      totalDurationInSeconds: 0,
-      isRunning: false,
-      totalPausedDuration: Duration.zero,
-    ));
+    emit(
+      state.copyWith(
+        remainingSeconds: 0,
+        totalDurationInSeconds: 0,
+        isRunning: false,
+        totalPausedDuration: Duration.zero,
+      ),
+    );
   }
 
   void _onTick(Tick event, Emitter<PomodoroTimerInitial> emit) {
@@ -75,29 +81,63 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         state.totalDurationInSeconds,
         state.remainingSeconds,
       );
-
+      final data = totalPausedDuration.inHours == 0
+          ? totalPausedDuration.inMinutes
+          : totalPausedDuration.inHours-1;
+      log(data.toString());
+      log((state.totalDurationInSeconds / 60).round().toString());
+      _getTotalPercentage(
+        totalPausedDuration.inMinutes,
+        (state.totalDurationInSeconds / 60).round(),
+      );
       PomodoroTimer(
         workTimeInMinutes: (state.totalDurationInSeconds / 60).round(),
         totalPausedDuration: state.totalPausedDuration,
         percentage: percentage,
       );
+      state.copyWith(
+        remainingSeconds: 0,
+        totalDurationInSeconds: 0,
+        isRunning: false,
+        totalPausedDuration: Duration.zero,
+      );
     }
   }
 
-  void _onSetCustomTime(SetCustomTime event, Emitter<PomodoroTimerInitial> emit) {
+  void _onSetCustomTime(
+    SetCustomTime event,
+    Emitter<PomodoroTimerInitial> emit,
+  ) {
     timer?.cancel();
-    emit(state.copyWith(
-      totalDurationInSeconds: event.totalSeconds,
-      remainingSeconds: event.totalSeconds,
-      isRunning: false,
-    ));
+    emit(
+      state.copyWith(
+        totalDurationInSeconds: event.totalSeconds,
+        remainingSeconds: event.totalSeconds,
+        isRunning: false,
+      ),
+    );
   }
 
-  String getInvertedPercentage(int totalDurationInSeconds, int remainingSeconds) {
+  // This function calculates the total pause time and the total countdown completion percentage.
+
+  int _getTotalPercentage(int pausedTime, int time) {
+    final activeTime = pausedTime >= time ? 0 : (time - pausedTime);
+    final percentage = (activeTime / time) * 100;
+    final roundedPercentage = percentage.round();
+    log(roundedPercentage.toString());
+    return roundedPercentage;
+  }
+
+  //This function is used to calculate the countdown percentage. If the value is 0, the percentage defaults to 100%.
+  String getInvertedPercentage(
+    int totalDurationInSeconds,
+    int remainingSeconds,
+  ) {
     if (totalDurationInSeconds == 0) return "0";
     if (remainingSeconds == 0) return "100";
     final completed =
-        ((totalDurationInSeconds - remainingSeconds) / totalDurationInSeconds) * 100;
+        ((totalDurationInSeconds - remainingSeconds) / totalDurationInSeconds) *
+        100;
     return completed.toInt().toString();
   }
 

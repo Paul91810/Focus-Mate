@@ -152,10 +152,11 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
   void _showsetTime(BuildContext context) {
     final bloc = context.read<PomodoroTimerBloc>();
-
     int selectedHour = 0;
-    int selectedMinute = 0;
-    int selectedSecond = 0;
+    int selectedMinuteIndex = 0;
+    int selectedSecond = 59;
+
+    final List<int> minuteOptions = [for (int i = 5; i <= 55; i += 5) i, 59];
 
     showCupertinoModalPopup(
       context: context,
@@ -164,7 +165,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
           height: 350.h,
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: AppColors.kButtonBlue,
+            color: AppColors.kSecondryColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
@@ -188,24 +189,11 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                       child: CupertinoPicker(
                         itemExtent: 50.h,
                         onSelectedItemChanged: (index) {
-                          selectedMinute = index;
+                          selectedMinuteIndex = index;
                         },
-                        children: List.generate(
-                          60,
-                          (index) => Center(child: Text("$index min")),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: CupertinoPicker(
-                        itemExtent: 50.h,
-                        onSelectedItemChanged: (index) {
-                          selectedSecond = index;
-                        },
-                        children: List.generate(
-                          60,
-                          (index) => Center(child: Text("$index sec")),
-                        ),
+                        children: minuteOptions
+                            .map((minute) => Center(child: Text("$minute min")))
+                            .toList(),
                       ),
                     ),
                   ],
@@ -215,12 +203,16 @@ class _PomodoroScreenState extends State<PomodoroScreen>
               SizedBox(
                 width: double.infinity,
                 child: CupertinoButton.filled(
+                  color: AppColors.kPrimaryColor,
                   child: Text("Set Time"),
                   onPressed: () {
+                    int selectedMinute = minuteOptions[selectedMinuteIndex];
+
                     int totalSeconds =
                         (selectedHour * 3600) +
                         (selectedMinute * 60) +
                         selectedSecond;
+
                     if (totalSeconds > 0) {
                       bloc.add(SetCustomTime(totalSeconds));
                       showNotification();
