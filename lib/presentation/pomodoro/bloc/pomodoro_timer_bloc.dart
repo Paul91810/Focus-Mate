@@ -15,18 +15,16 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   Duration totalPausedDuration = Duration.zero;
 
   PomodoroTimerBloc()
-    : super(
-        PomodoroTimerInitial(
-          workTimeInMinutes: 0,
+      : super(PomodoroTimerInitial(
+          totalDurationInSeconds: 0,
           remainingSeconds: 0,
           isRunning: false,
-        ),
-      ) {
+        )) {
     on<StartTimer>(_onStartTimer);
     on<PauseTimer>(_onPauseTimer);
     on<ResetTimer>(_onResetTimer);
     on<Tick>(_onTick);
-    on<SetWorkTime>(_onSetWorkTime);
+    on<SetCustomTime>(_onSetCustomTime);
   }
 
   void _onStartTimer(StartTimer event, Emitter<PomodoroTimerInitial> emit) {
@@ -34,15 +32,13 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
       resumeTime = DateTime.now();
       final pausedDuration = resumeTime!.difference(pauseTime!);
       totalPausedDuration += pausedDuration;
-      emit(
-        state.copyWith(
-          isRunning: true,
-          totalPausedDuration: totalPausedDuration,
-        ),
-      );
+      emit(state.copyWith(
+        isRunning: true,
+        totalPausedDuration: totalPausedDuration,
+      ));
 
-      log("Paused for: ${pausedDuration.inMinutes} minuts");
-      log("Total paused time: ${totalPausedDuration.inMinutes} minuts");
+      log("Paused for: ${pausedDuration.inMinutes} minutes");
+      log("Total paused time: ${totalPausedDuration.inMinutes} minutes");
 
       pauseTime = null;
     }
@@ -60,13 +56,12 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
 
   void _onResetTimer(ResetTimer event, Emitter<PomodoroTimerInitial> emit) {
     timer?.cancel();
-    emit(
-      state.copyWith(
-        remainingSeconds: 0,
-        isRunning: false,
-        totalPausedDuration: Duration.zero,
-      ),
-    );
+    emit(state.copyWith(
+      remainingSeconds: 0,
+      totalDurationInSeconds: 0,
+      isRunning: false,
+      totalPausedDuration: Duration.zero,
+    ));
   }
 
   void _onTick(Tick event, Emitter<PomodoroTimerInitial> emit) {
@@ -77,40 +72,33 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
       emit(state.copyWith(isRunning: false));
 
       final percentage = getInvertedPercentage(
-        state.workTimeInMinutes,
+        state.totalDurationInSeconds,
         state.remainingSeconds,
       );
 
-      final data = PomodoroTimer(
-        workTimeInMinutes: state.workTimeInMinutes,
+      PomodoroTimer(
+        workTimeInMinutes: (state.totalDurationInSeconds / 60).round(),
         totalPausedDuration: state.totalPausedDuration,
         percentage: percentage,
       );
-      // log("Completed: ${data.percentage}%");
-      // log(data.totalPausedDuration.inSeconds.toString());
-      // log(data.workTimeInMinutes.toString());
     }
   }
 
-  void _onSetWorkTime(SetWorkTime event, Emitter<PomodoroTimerInitial> emit) {
+  void _onSetCustomTime(SetCustomTime event, Emitter<PomodoroTimerInitial> emit) {
     timer?.cancel();
-    emit(
-      PomodoroTimerInitial(
-        workTimeInMinutes: event.minutes,
-        remainingSeconds: event.minutes * 60,
-        isRunning: false,
-      ),
-    );
+    emit(state.copyWith(
+      totalDurationInSeconds: event.totalSeconds,
+      remainingSeconds: event.totalSeconds,
+      isRunning: false,
+    ));
   }
 
-  String getInvertedPercentage(int workTimeInMinutes, int remainingSeconds) {
-    if (workTimeInMinutes == 0) return "0";
+  String getInvertedPercentage(int totalDurationInSeconds, int remainingSeconds) {
+    if (totalDurationInSeconds == 0) return "0";
     if (remainingSeconds == 0) return "100";
-    final data =
-        ((workTimeInMinutes * 60 - remainingSeconds) /
-            (workTimeInMinutes * 60)) *
-        100;
-    return data.toInt().toString();
+    final completed =
+        ((totalDurationInSeconds - remainingSeconds) / totalDurationInSeconds) * 100;
+    return completed.toInt().toString();
   }
 
   @override

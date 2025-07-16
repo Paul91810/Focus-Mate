@@ -4,25 +4,26 @@ part of 'pomodoro_timer_bloc.dart';
 sealed class PomodoroTimerState {}
 
 class PomodoroTimerInitial extends PomodoroTimerState {
-  final int workTimeInMinutes;
+  final int totalDurationInSeconds;
   final int remainingSeconds;
   final bool isRunning;
-  final Duration totalPausedDuration; 
+  final Duration totalPausedDuration;
+
   PomodoroTimerInitial({
-    required this.workTimeInMinutes,
+    required this.totalDurationInSeconds,
     required this.remainingSeconds,
     required this.isRunning,
-    this.totalPausedDuration = Duration.zero, 
+    this.totalPausedDuration = Duration.zero,
   });
 
   PomodoroTimerInitial copyWith({
-    int? workTimeInMinutes,
+    int? totalDurationInSeconds,
     int? remainingSeconds,
     bool? isRunning,
     Duration? totalPausedDuration,
   }) {
     return PomodoroTimerInitial(
-      workTimeInMinutes: workTimeInMinutes ?? this.workTimeInMinutes,
+      totalDurationInSeconds: totalDurationInSeconds ?? this.totalDurationInSeconds,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       isRunning: isRunning ?? this.isRunning,
       totalPausedDuration: totalPausedDuration ?? this.totalPausedDuration,

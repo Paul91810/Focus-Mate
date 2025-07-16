@@ -44,7 +44,7 @@ class MainScreen extends StatelessWidget {
                 actionsPadding: EdgeInsets.symmetric(horizontal: 20.w),
                 automaticallyImplyLeading: false,
                 title: Text(titles[state.currentIndex]),
-                actions: [Icon(Icons.notification_add)],
+                actions: [Icon(Icons.notifications)],
               ),
 
               backgroundColor: AppColors.kPrimaryColor,
@@ -61,6 +61,7 @@ class MainScreen extends StatelessWidget {
                   FloatingActionButtonLocation.centerFloat,
               floatingActionButton: state.currentIndex == 2
                   ? CustomAppElvatedButton(
+                    backGroundcolor: AppColors.kButtonBlue,
                     buttonSize: Size(300.w, 40.h),
                       child: Text(
                         'See details',

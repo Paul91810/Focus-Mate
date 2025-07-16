@@ -13,7 +13,9 @@ class GetInvertedPercentage extends PomodoroTimerEvent {}
 
 class Tick extends PomodoroTimerEvent {}
 
-class SetWorkTime extends PomodoroTimerEvent {
-  final int minutes;
-  SetWorkTime(this.minutes);
+
+
+class SetCustomTime extends PomodoroTimerEvent {
+  final int totalSeconds;
+  SetCustomTime(this.totalSeconds);
 }

@@ -41,7 +41,7 @@ class PlanCreator extends StatelessWidget {
                 height: 100.h,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: AppColors.kButtonBlue,
+                  color: AppColors.kSecondryColor,
                 ),
                 child: Center(
                   child: Text(
