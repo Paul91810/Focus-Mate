@@ -14,6 +14,7 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   Timer? timer;
   DateTime? pauseTime;
   DateTime? resumeTime;
+  bool hasShownSlowNotification = false;
   Duration totalPausedDuration = Duration.zero;
 
   PomodoroTimerBloc() : super(_loadStateFromHive()) {
@@ -78,7 +79,10 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
     _saveStateToHive(state.copyWith(isRunning: true));
   }
 
-  void _onPauseTimer(PauseTimer event, Emitter<PomodoroTimerInitial> emit) {
+  void _onPauseTimer(
+    PauseTimer event,
+    Emitter<PomodoroTimerInitial> emit,
+  ) async {
     timer?.cancel();
     pauseTime = DateTime.now();
     emit(state.copyWith(isRunning: false));
@@ -101,30 +105,50 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   void _onTick(Tick event, Emitter<PomodoroTimerInitial> emit) {
     if (state.remainingSeconds > 0) {
       emit(state.copyWith(remainingSeconds: state.remainingSeconds - 1));
+
+      // ✅ Check paused percentage only once
+      if (!hasShownSlowNotification) {
+        final pausedTime = totalPausedDuration.inMinutes;
+        final totalTime = (state.totalDurationInSeconds / 60).round();
+
+        final activePercentage = _getTotalPercentage(pausedTime, totalTime);
+
+        if (activePercentage <= 50) {
+          NotificationService.showNotification(
+            title: "You're Moving Too Slow",
+            body:
+                "You’ve paused more than 50% of your focus time. Stay on track!",
+          );
+          hasShownSlowNotification = true;
+        }
+      }
     } else {
+      // Countdown finished logic
       timer?.cancel();
       emit(state.copyWith(isRunning: false));
+
       final percentage = getInvertedPercentage(
         state.totalDurationInSeconds,
         state.remainingSeconds,
       );
-      final data = totalPausedDuration.inHours == 0
-          ? totalPausedDuration.inMinutes
-          : totalPausedDuration.inHours - 1;
+
       _getTotalPercentage(
         totalPausedDuration.inMinutes,
         (state.totalDurationInSeconds / 60).round(),
       );
+
       PomodoroTimer(
         workTimeInMinutes: (state.totalDurationInSeconds / 60).round(),
         totalPausedDuration: state.totalPausedDuration,
         percentage: percentage,
       );
+
       NotificationService.showNotification(
         title: 'Focus Mode Completed',
         body:
             "Your focus session has finished. You can now review your progress or start a new session.",
       );
+
       emit(
         state.copyWith(
           remainingSeconds: 0,
@@ -134,6 +158,7 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         ),
       );
     }
+
     _saveStateToHive(state);
   }
 
