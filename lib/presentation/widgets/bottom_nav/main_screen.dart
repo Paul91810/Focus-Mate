@@ -80,7 +80,7 @@ class MainScreen extends StatelessWidget {
   final List<Widget> bottomScreens = [
     HomeScreen(),
     PomodoroScreen(),
-    PlanCreator(),
+    DailyPlan(),
     ProfileAndStatusScreen(),
   ];
 }
