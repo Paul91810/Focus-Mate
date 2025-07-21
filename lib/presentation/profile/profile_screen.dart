@@ -120,7 +120,7 @@ class _BadgeItem extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          backgroundColor: color.withOpacity(0.2),
+         
           child: Icon(icon, color: color),
         ),
         const SizedBox(height: 8),

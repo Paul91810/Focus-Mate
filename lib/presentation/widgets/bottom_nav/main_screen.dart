@@ -8,8 +8,6 @@ import 'package:focus_mate/presentation/profile/profile_screen.dart';
 import 'package:focus_mate/presentation/daily_planner/daily_planner_screen.dart';
 import 'package:focus_mate/presentation/widgets/bottom_nav/bloc/bottom_nav_bloc.dart';
 import 'package:focus_mate/presentation/widgets/bottom_nav/bottom_nav_bar.dart';
-import 'package:focus_mate/presentation/widgets/custom_elvated_button.dart';
-
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
 
