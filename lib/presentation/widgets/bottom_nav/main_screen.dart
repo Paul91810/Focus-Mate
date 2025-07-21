@@ -15,12 +15,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> titles = [
-      'Home',
-      'Pomodoro Timer',
-      'Smart Task Planner',
-      'Profile',
-    ];
+   
     return BlocProvider(
       create: (context) => BottomNavBloc(),
       child: BlocBuilder<BottomNavBloc, BottomNavState>(
@@ -40,22 +35,7 @@ class MainScreen extends StatelessWidget {
               return false;
             },
             child: Scaffold(
-              appBar: AppBar(
-                actionsPadding: EdgeInsets.symmetric(horizontal: 20.w),
-                automaticallyImplyLeading: false,
-                title: Text(titles[state.currentIndex]),
-                actions: [
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificationsScreen(),
-                            ));
-                      },
-                      child: Icon(Icons.notifications))
-                ],
-              ),
+              
               backgroundColor: AppColors.kPrimaryColor,
               body: state is BottomNavInitial
                   ? IndexedStack(

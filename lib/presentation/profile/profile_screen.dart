@@ -19,9 +19,12 @@ class ProfileAndStatusScreen extends StatelessWidget {
           if (state is ProfileLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ProfileError) {
-            return Center(child: Text(state.message, style: TextStyle(color: Colors.red)));
+            return Center(
+                child:
+                    Text(state.message, style: TextStyle(color: Colors.red)));
           } else if (state is ProfileLoaded) {
-            return _buildProfileUI(context, state.profile, isCached: state.isCached);
+            return _buildProfileUI(context, state.profile,
+                isCached: state.isCached);
           }
 
           return const SizedBox.shrink();
@@ -30,42 +33,47 @@ class ProfileAndStatusScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileUI(BuildContext context, GetProfile profile, {bool isCached = false}) {
-    return ListView(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
-      children: [
-        if (isCached)
-          const Padding(
-            padding: EdgeInsets.only(bottom: 10),
+  Widget _buildProfileUI(BuildContext context, GetProfile profile,
+      {bool isCached = false}) {
+    return SafeArea(
+      child: ListView(
+        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+        children: [
+          Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 8.w),
             child: Text(
-              'Showing cached profile data (offline or timeout fallback)',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.orange),
+              profile.name?.toUpperCase() ?? 'No Name',
+              style: TextTheme.of(context).headlineLarge,
             ),
           ),
-        AppSize.commonHeight,
-        const CircleAvatar(
-          radius: 50,
-          backgroundColor: AppColors.kWhite,
-          child: FlutterLogo(),
-        ),
-        Column(
-          children: [
-            AppSize.commonHeight,
-            Text(
-              profile.name?.toUpperCase() ?? 'No Name',
-              style: TextTheme.of(context).bodyLarge,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppSize.height20,
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundColor: AppColors.kWhite,
+                  child: FlutterLogo(),
+                ),
+                AppSize.commonHeight,
+                // Text(
+                //   profile.name?.toUpperCase() ?? 'No Name',
+                //   style: TextTheme.of(context).bodyLarge,
+                // ),
+                AppSize.commonHeight,
+                Text(
+                  profile.email ?? "No Email",
+                  style: TextTheme.of(context).bodyLarge,
+                ),
+                AppSize.commonHeight,
+              ],
             ),
-            AppSize.commonHeight,
-            Text(
-              profile.email ?? "No Email",
-              style: const TextStyle(color: Colors.grey),
-            ),
-            AppSize.commonHeight,
-          ],
-        ),
-        _buildStatusCard(context),
-      ],
+          ),
+          _buildStatusCard(context),
+        ],
+      ),
     );
   }
 
@@ -89,9 +97,16 @@ class ProfileAndStatusScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: const [
-              _BadgeItem(icon: Icons.check_circle, label: 'Task Master', color: Colors.green),
-              _BadgeItem(icon: Icons.star, label: 'Focused', color: Colors.blue),
-              _BadgeItem(icon: Icons.calendar_today, label: 'Consistency', color: Colors.amber),
+              _BadgeItem(
+                  icon: Icons.check_circle,
+                  label: 'Task Master',
+                  color: Colors.green),
+              _BadgeItem(
+                  icon: Icons.star, label: 'Focused', color: Colors.blue),
+              _BadgeItem(
+                  icon: Icons.calendar_today,
+                  label: 'Consistency',
+                  color: Colors.amber),
             ],
           ),
         ],
@@ -99,7 +114,8 @@ class ProfileAndStatusScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(IconData icon, String title, String value, BuildContext context) {
+  Widget _infoRow(
+      IconData icon, String title, String value, BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: Colors.orange),
       title: Text(title, style: TextTheme.of(context).bodyLarge),
@@ -113,14 +129,14 @@ class _BadgeItem extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _BadgeItem({required this.icon, required this.label, required this.color});
+  const _BadgeItem(
+      {required this.icon, required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         CircleAvatar(
-         
           child: Icon(icon, color: color),
         ),
         const SizedBox(height: 8),
