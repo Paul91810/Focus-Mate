@@ -1,22 +1,24 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
+import 'package:focus_mate/data/local/store_user_id.dart';
+import 'package:focus_mate/data/models/login_model.dart';
+import 'package:focus_mate/data/repo/login_repo.dart';
+import 'package:focus_mate/data/utils/from_validators.dart';
+import 'package:focus_mate/presentation/signup/signup_scren.dart';
 import 'package:focus_mate/presentation/widgets/bottom_nav/main_screen.dart';
 import 'package:focus_mate/presentation/widgets/custom_appbutton.dart';
 import 'package:focus_mate/presentation/widgets/custom_textfield/custom_textfield.dart';
 import 'package:lottie/lottie.dart';
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
-
-  final emilController = TextEditingController();
-  final passwordController = TextEditingController();
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final from = GlobalKey<FormState>();
+    final emilController = TextEditingController();
+    final passwordController = TextEditingController();
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -26,7 +28,7 @@ class LoginScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "FocusMate",
+                  "Login",
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 AppSize.height20,
@@ -37,21 +39,20 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 AppSize.commonHeight,
-                CustomTextField(
-                  controller: emilController,
-                  label: 'Email',
-                  validator: (value) {
-                    // log(value);
-                    return null;
-                  },
-                ),
-                CustomTextField(
-                  controller: passwordController,
-                  label: 'Password',
-                  validator: (value) {
-                    // log(value);
-                     return null;
-                  },
+                Form(
+                  key: from,
+                  child: Column(
+                    children: [
+                      CustomTextField(
+                          controller: emilController,
+                          label: 'Email',
+                          validator: FormValidation.validateEmail),
+                      CustomTextField(
+                          controller: passwordController,
+                          label: 'Password',
+                          validator: FormValidation.validatePassword),
+                    ],
+                  ),
                 ),
                 AppSize.commonHeight,
                 CustomAppButton(
@@ -60,11 +61,13 @@ class LoginScreen extends StatelessWidget {
                     'Log in',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
-                    );
+                  onPressed: () async {
+                    if (from.currentState!.validate()) {
+                      await _signup(
+                          email: emilController.text,
+                          password: passwordController.text,
+                          context: context);
+                    }
                   },
                 ),
                 AppSize.height20,
@@ -85,30 +88,16 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                AppSize.height20,
-                CustomAppButton(
-                  bordersideColor: Colors.grey.shade600,
-                  backGroundcolor: AppColors.kPrimaryColor,
-                  buttonSize: Size(double.infinity, 40.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Image(
-                        height: 18.h,
-                        image: Svg('assets/images/signupButtonImage.svg'),
-                      ),
-                      Text(
-                        'Sig in with Google',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                  onPressed: () {},
-                ),
                 AppSize.commonHeight,
                 Center(
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignupScreen(),
+                          ));
+                    },
                     child: Text(
                       'Sign Up',
                       style: Theme.of(context).textTheme.bodyLarge,
@@ -120,6 +109,31 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _signup(
+      {required String email,
+      required String password,
+      required BuildContext context}) async {
+    Login signup = Login(
+      email: email,
+      password: password,
+    );
+    Loginrepo repo = Loginrepo();
+    await repo.loginUser(signup).then(
+      (value) async {
+        if (value!.message == "Login successful") {
+          await StoreUserId.storeUserId(value.userId!);
+          await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MainScreen(),
+            ),
+            (route) => false,
+          );
+        }
+      },
     );
   }
 }

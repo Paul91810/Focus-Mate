@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:focus_mate/data/local/hive_boxs.dart';
-import 'package:focus_mate/data/local/pomodoro_timer.dart';
 import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:meta/meta.dart';
 
@@ -137,11 +136,11 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
         (state.totalDurationInSeconds / 60).round(),
       );
 
-      PomodoroTimer(
-        workTimeInMinutes: (state.totalDurationInSeconds / 60).round(),
-        totalPausedDuration: state.totalPausedDuration,
-        percentage: percentage,
-      );
+      // PomodoroTimer(
+      //   workTimeInMinutes: (state.totalDurationInSeconds / 60).round(),
+      //   totalPausedDuration: state.totalPausedDuration,
+      //   percentage: percentage,
+      // );
 
       NotificationService.showNotification(
         title: 'Focus Mode Completed',

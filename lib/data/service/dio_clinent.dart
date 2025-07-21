@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:focus_mate/data/app_urls.dart';
+import 'package:focus_mate/data/utils/app_urls.dart';
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
