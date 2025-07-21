@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/theme/theme.dart';
+import 'package:focus_mate/data/models/profile_model.dart';
 import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:focus_mate/presentation/splash/splash_screen.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -13,6 +14,7 @@ void main() async {
   await NotificationService().initNotification();
   await NotificationService().requestNotificationPermission();
   await Hive.openBox('pomodoro_timer');
+  Hive.registerAdapter(GetProfileAdapter());
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
