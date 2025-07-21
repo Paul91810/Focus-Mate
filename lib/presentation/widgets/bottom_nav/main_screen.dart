@@ -46,30 +46,16 @@ class MainScreen extends StatelessWidget {
                 title: Text(titles[state.currentIndex]),
                 actions: [Icon(Icons.notifications)],
               ),
-
               backgroundColor: AppColors.kPrimaryColor,
-
               body: state is BottomNavInitial
                   ? IndexedStack(
                       index: state.currentIndex,
                       children: bottomScreens,
                     )
                   : const SizedBox.shrink(),
-
               bottomNavigationBar: BottomNavBar(),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: state.currentIndex == 2
-                  ? CustomAppElvatedButton(
-                    backGroundcolor: AppColors.kButtonBlue,
-                    buttonSize: Size(300.w, 40.h),
-                      child: Text(
-                        'See details',
-                        style: TextTheme.of(context).bodyLarge,
-                      ),
-                      onPressed: () async {},
-                    )
-                  : SizedBox(),
             ),
           );
         },
