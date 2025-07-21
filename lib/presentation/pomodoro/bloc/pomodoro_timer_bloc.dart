@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:focus_mate/data/local/hive_boxs.dart';
+import 'package:focus_mate/data/local/hive_keys.dart';
 import 'package:focus_mate/data/notifications/notifications.dart';
 import 'package:meta/meta.dart';
 
@@ -29,17 +30,17 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
   }
 
   static PomodoroTimerInitial _loadStateFromHive() {
-    final box = HiveBoxs.pomodoroBox;
+    final box = AppHiveBox.pomodoroBox;
     final totalDurationInSeconds = box.get(
-      'totalDurationInSeconds',
+      HiveKeys.totalDurationInSeconds,
       defaultValue: 0,
     );
-    final startTimeString = box.get('startTime');
-    final isRunning = box.get('isRunning', defaultValue: false);
+    final startTimeString = box.get(HiveKeys.startTime);
+    final isRunning = box.get(HiveKeys.isRunning, defaultValue: false);
     Duration totalPausedDuration = Duration(
-      seconds: box.get('totalPausedDuration', defaultValue: 0),
+      seconds: box.get(HiveKeys.totalPausedDuration, defaultValue: 0),
     );
-    int remainingSeconds = box.get('remainingSeconds', defaultValue: 0);
+    int remainingSeconds = box.get(HiveKeys.remainingSeconds, defaultValue: 0);
 
     if (startTimeString != null) {
       final startTime = DateTime.parse(startTimeString);
@@ -126,7 +127,7 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
       timer?.cancel();
       emit(state.copyWith(isRunning: false));
 
-      final percentage = getInvertedPercentage(
+      getInvertedPercentage(
         state.totalDurationInSeconds,
         state.remainingSeconds,
       );
@@ -192,24 +193,24 @@ class PomodoroTimerBloc extends Bloc<PomodoroTimerEvent, PomodoroTimerInitial> {
     if (remainingSeconds == 0) return "100";
     final completed =
         ((totalDurationInSeconds - remainingSeconds) / totalDurationInSeconds) *
-        100;
+            100;
     return completed.toInt().toString();
   }
 
   void _saveStateToHive(PomodoroTimerInitial state) {
-    HiveBoxs.pomodoroBox.put(
-      'totalDurationInSeconds',
+    AppHiveBox.pomodoroBox.put(
+      HiveKeys.totalDurationInSeconds,
       state.totalDurationInSeconds,
     );
-    HiveBoxs.pomodoroBox.put('remainingSeconds', state.remainingSeconds);
-    HiveBoxs.pomodoroBox.put('isRunning', state.isRunning);
-    HiveBoxs.pomodoroBox.put(
-      'totalPausedDuration',
+    AppHiveBox.pomodoroBox.put(HiveKeys.remainingSeconds, state.remainingSeconds);
+    AppHiveBox.pomodoroBox.put(HiveKeys.isRunning, state.isRunning);
+    AppHiveBox.pomodoroBox.put(
+      HiveKeys.totalPausedDuration,
       state.totalPausedDuration.inSeconds,
     );
     if (state.isRunning) {
-      HiveBoxs.pomodoroBox.put(
-        'startTime',
+      AppHiveBox.pomodoroBox.put(
+        HiveKeys.startTime,
         DateTime.now()
             .subtract(
               Duration(

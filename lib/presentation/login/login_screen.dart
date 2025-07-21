@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
-import 'package:focus_mate/data/local/store_user_id.dart';
+import 'package:focus_mate/data/local/user_id.dart';
 import 'package:focus_mate/data/models/login_model.dart';
 import 'package:focus_mate/data/repo/login_repo.dart';
 import 'package:focus_mate/data/utils/from_validators.dart';
@@ -124,7 +124,7 @@ class LoginScreen extends StatelessWidget {
     await repo.loginUser(signup).then(
       (value) async {
         if (value!.message == "Login successful") {
-          await StoreUserId.storeUserId(value.userId!);
+          await UserId.storeUserId(value.userId!);
           await Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

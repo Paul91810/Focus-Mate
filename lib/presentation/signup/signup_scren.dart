@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
-import 'package:focus_mate/data/local/store_user_id.dart';
+import 'package:focus_mate/data/local/user_id.dart';
 import 'package:focus_mate/data/models/signup_model.dart';
 import 'package:focus_mate/data/repo/signup_repo.dart';
 import 'package:focus_mate/data/utils/from_validators.dart';
@@ -161,7 +161,7 @@ class SignupScreen extends StatelessWidget {
     repo.signupUser(signup).then(
       (value) {
         if (value!.message == "Signup successful") {
-          StoreUserId.storeUserId(value.userId!);
+          UserId.storeUserId(value.userId!);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

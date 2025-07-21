@@ -16,6 +16,7 @@ void main() async {
   await Hive.openBox('pomodoro_timer');
   await Hive.openBox('User_id');
   Hive.registerAdapter(GetProfileAdapter());
+  await Hive.openBox('profileBox');
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

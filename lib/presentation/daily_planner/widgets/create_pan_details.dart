@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
 import 'package:focus_mate/core/constants/app_size.dart';
+import 'package:focus_mate/data/repo/motivation_repo.dart';
 import 'package:focus_mate/presentation/daily_planner/bloc/plan_creator_bloc.dart';
 import 'package:focus_mate/presentation/widgets/custom_elvated_button.dart';
 import 'package:focus_mate/presentation/widgets/custom_textfield/custom_textfield.dart';
@@ -15,7 +15,7 @@ class PlanCreator extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController taskController = TextEditingController();
     final formKey = GlobalKey<FormState>();
-
+    GetMotivationRepo motivation = GetMotivationRepo();
     return ListView(
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
       children: [
@@ -24,20 +24,26 @@ class PlanCreator extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         AppSize.height20,
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-          width: double.infinity,
-          height: 100.h,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: AppColors.kSecondryColor,
-          ),
-          child: Center(
-            child: Text(
-              'Draft project proposal Organize your workspace Review meeting notes',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
+        FutureBuilder(
+          future: motivation.getMotivationCombo(),
+          builder: (context, snapshot) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              width: double.infinity,
+              height: 100.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: AppColors.kSecondryColor,
+              ),
+              child: Center(
+                child: Text(
+                  snapshot.data?.content?.text ??
+                      'Draft project proposal Organize your workspace Review meeting notes',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+            );
+          },
         ),
         AppSize.height20,
         Text('What would you like to accomplish'),

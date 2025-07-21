@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:focus_mate/core/constants/app_colors.dart';
-import 'package:focus_mate/data/local/store_user_id.dart';
+import 'package:focus_mate/data/local/user_id.dart';
 import 'package:focus_mate/presentation/onboarding/on_boardings_screen.dart';
 import 'package:focus_mate/presentation/widgets/bottom_nav/main_screen.dart';
 
@@ -39,7 +39,7 @@ class SplashScreen extends StatelessWidget {
   Future<void> _gotoNextScreen(BuildContext context) async {
     Future.delayed(Duration(seconds: 3), () async {
       if (!context.mounted) return;
-      if (await StoreUserId.getUserId() == null) {
+      if (await UserId.getUserId() == null) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
