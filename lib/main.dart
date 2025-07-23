@@ -14,6 +14,7 @@ void main() async {
   await NotificationService().initNotification();
   await NotificationService().requestNotificationPermission();
   await Hive.openBox('pomodoro_timer');
+  
   await Hive.openBox('User_id');
   Hive.registerAdapter(GetProfileAdapter());
   await Hive.openBox('profileBox');
