@@ -33,7 +33,7 @@ class NotificationsScreen extends StatelessWidget {
             itemCount: notifications.length,
             itemBuilder: (context, index) {
               final item = notifications[index];
-              int converted = int.parse(item.percentage ?? "0");
+              int? converted = int.parse(item.percentage ?? "0");
 
               return Card(
                   elevation: 1,
